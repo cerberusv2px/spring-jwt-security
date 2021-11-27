@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+  <changeSet id="create-hibernate-sequence" author="sujin">
+    <sql>
+      CREATE SEQUENCE IF NOT EXISTS "hibernate_sequence"
+    </sql>
+  </changeSet>
+
+  <changeSet id="create-users-table" author="sujin">
+    <createTable tableName="users">
+      <column name="id" type="bigint" >
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="username" type="varchar(50)">
+        <constraints unique="true" nullable="false" uniqueConstraintName="ux_user_login"/>
+      </column>
+      <column name="password" type="varchar(120)"/>
+      <column name="name" type="varchar(60)"/>
+    </createTable>
+
+    <createTable tableName="roles">
+      <column name="id" type="bigint" >
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="name" type="varchar(50)">
+        <constraints primaryKey="false" nullable="false"/>
+      </column>
+    </createTable>
+
+    <createTable tableName="user_roles">
+      <column name="user_id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="role_id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addPrimaryKey columnNames="user_id, role_id" tableName="user_roles"/>
+
+    <addForeignKeyConstraint baseColumnNames="role_id"
+      baseTableName="user_roles"
+      constraintName="fk_role_id"
+      referencedColumnNames="id"
+      referencedTableName="roles"/>
+
+    <addForeignKeyConstraint baseColumnNames="user_id"
+      baseTableName="user_roles"
+      constraintName="fk_user_id"
+      referencedColumnNames="id"
+      referencedTableName="users"/>
+
+  </changeSet>
+
+</databaseChangeLog>
